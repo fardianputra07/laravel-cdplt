@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\AuthConroller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 /*
@@ -14,11 +15,15 @@ use App\Http\Controllers\PostController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PostController::class, 'index'])->middleware('isLogin');
 
-Route::get('posts', [PostController::class, 'index']);
+Route::get('login', [AuthConroller::class, 'login']);
+Route::post('login', [AuthConroller::class, 'authenticate']);
+Route::get('logout', [AuthConroller::class, 'logout']);
+Route::get('register', [AuthConroller::class, 'register_form']);
+Route::post('register', [AuthConroller::class, 'register']);
+
+Route::get('posts', [PostController::class, 'index'])->middleware('isLogin');
 Route::get('posts/create', [PostController::class, 'create']);
 Route::get('posts/{id}', [PostController::class, 'show']);
 Route::post('posts', [PostController::class, 'store']);

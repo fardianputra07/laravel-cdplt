@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Buat Postingan</title>
-    <link href="{{ asset('bootstrap-5/css/bootstrap.min.css') }}" rel="stylesheet">
-</head>
+@section('title')
+    Blog | Buat postingan
+@endsection
 
-<body>
-    <div class="container">
+@section('content')
         <h1>Buat Postingan</h1>
         <form method="POST" action="{{ url('posts') }}" class="form-control">
             <div class="mb-3">
@@ -25,10 +19,4 @@
               </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-    </div>
-
-    <script src="{{ asset('bootstrap-5/js/bootstrap.bundle.min.js') }}">
-    </script>
-</body>
-
-</html>
+@endsection

@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 
+use App\Mail\BlogPosted;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use illuminate\Support\Facades\Auth;
 use App\Models\Post;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
         $posts = Post::active()->get();
@@ -25,6 +24,9 @@ class PostController extends Controller
 
     public function create()
     {
+        if (!Auth::check()) {
+            return redirect('login');
+          }
         return view('posts.create');
     }
 
@@ -34,13 +36,14 @@ class PostController extends Controller
         $title = $request->input('title');
         $content = $request->input('content');
 
-        Post::insert([
+        $post = Post::create([
             'title' => $title,
-            'content' => $content,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'content' => $content
         ]);
 
+
+        $this->notifyTele($post);
+        Mail::to($request->user())->send(new BlogPosted($post));
         return redirect('posts');
     }
 
@@ -48,8 +51,12 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::where('id', '=', $id)->first();
+        $comments = $post->comments()->limit(5)->get();
+        $total_comments = $post->total_comment();
         $view_data = [
-            'post' => $post
+            'post' => $post,
+            'comments'=> $comments,
+            'total_comments' => $total_comments
         ];
         return view('posts.show', $view_data);
     }
@@ -84,5 +91,19 @@ class PostController extends Controller
     {
         Post::where('id', $id)->delete();
         return redirect('posts');
+    }
+
+    private function notifyTele($post)
+    {
+        $url = "https://api.telegram.org/bot7020913620:AAGoN2exrdTLFDRFvAVpRgOSUrFpo5K6QJg/sendMessage";
+        $chat_id = -4279250385;
+        $content ="New article are arival: {$post->title}";
+
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => $content
+        ];
+
+        Http::post($url , $data);
     }
 }
