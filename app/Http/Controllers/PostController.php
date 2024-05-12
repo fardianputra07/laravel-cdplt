@@ -95,8 +95,6 @@ class PostController extends Controller
 
     private function notifyTele($post)
     {
-        $url = "https://api.telegram.org/bot7020913620:AAGoN2exrdTLFDRFvAVpRgOSUrFpo5K6QJg/sendMessage";
-        $chat_id = -4279250385;
         $content ="New article are arival: {$post->title}";
 
         $data = [
